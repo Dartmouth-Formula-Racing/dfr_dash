@@ -1,7 +1,3 @@
-/* Learn to use pushbutton (button switch) with Arduino - Tutorial
-   More info and circuit schematic: http://www.ardumotive.com/arduino-tutorials/category/button
-   Dev: Michalis Vasilakis / Date: 19/10/2014  
-   UPDATED 2/6/2016 - LED to Arduino pin 3 and button to Arduino pin 4*/
 
 // DRIVE BUTTON
 
