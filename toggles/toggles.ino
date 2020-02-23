@@ -1,5 +1,10 @@
 // TOGGLES
 
+// TO DO:
+// add in whatever we are displaying - so we would have to put in some code to communicate with i^2c 
+// include the library wire.h
+// we will put the words and the lights on the LCD driver 
+
 //Constants for Toggle 1 (A&B)
 const int buttonPinToggle1A = 14;  
 const int buttonPinToggle1B = 13;    
