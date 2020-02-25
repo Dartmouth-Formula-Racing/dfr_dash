@@ -93,8 +93,8 @@ void loop(){
   if (buttonStateDrive == LOW) { 
     // put in an and condition that of the first bit of CVC is = 0 
     // reset the other buttons to high
-    buttonStateNeutral == HIGH;
-    buttonStateReverse == HIGH;
+    //buttonStateNeutral == HIGH;
+    //buttonStateReverse == HIGH;
 
     // send state of drive to CVC thru CAN
     for (int i=0; i<8; i++){ txBuffer[i] = sendData[i];}
@@ -108,8 +108,8 @@ void loop(){
   //If button the button is pressed, the state is LOW
   else if (buttonStateNeutral == LOW) { 
     // reset the other buttons to high
-    buttonStateDrive == HIGH;
-    buttonStateReverse == HIGH;
+    //buttonStateDrive == HIGH;
+    //buttonStateReverse == HIGH;
 
     // send state to the CVC thru CAN
     for (int i=0; i<8; i++){ txBuffer[i] = sendData[i];}
@@ -124,8 +124,8 @@ void loop(){
   //If button the button is pressed, the state is LOW
   else if (buttonStateReverse == LOW) { 
     // reset the other buttons to high
-    buttonStateNeutral == HIGH;
-    buttonStateDrive == HIGH;
+    //buttonStateNeutral == HIGH;
+    //buttonStateDrive == HIGH;
 
     // send state to CVC thru CAN
     for (int i=0; i<8; i++){ txBuffer[i] = sendData[i];}
