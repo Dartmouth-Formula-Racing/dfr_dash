@@ -3,6 +3,8 @@
  * Receives data on the CAN buss and prints to the serial port
  */
 
+ 
+
 #include <ASTCanLib.h>              
 
 #define MESSAGE_ID        0       // Message ID
@@ -12,6 +14,12 @@
 
 // Function prototypes
 void serialPrintData(st_cmd_t *msg);
+
+// Variables for things received
+int buttonStateFromCVC = 0; // default to drive
+int r2d_preC_state;
+int fault;
+byte array[8];
 
 // CAN message object
 st_cmd_t Msg;
@@ -36,18 +44,27 @@ void setup() {
 
   // we put stuff in here
   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+
 }
 
 void loop() {
+
   // READ IN BYTES
   // send data only when you receive data:
-  if (Serial.available() > -1) {
-    // read the incoming byte:
-    incomingByte = Serial.read();
+  if(Serial.available()) {
+    while(Serial.available() <=8) {
+    for (int i=0; i <=8 ; i++) { array[i] = Serial.read();}
 
-    // say what you got:
-    Serial.print("I received: ");
-    Serial.println(incomingByte, DEC);
+    // Byte 0 = preC and R2D LEDs so need to write the i^2C code to turn the LEDs on or off
+    r2d_preC_state = array[0];
+
+    // Byte1 =  check the state the car is at and then check that it is the same as the button state 
+    // change the LED if necessary
+    buttonStateFromCVC = array[1];
+
+    // Byte2 = faults!!
+    buttonStateFromCVC = array[2];
+
   }
   
   // Clear the message buffer
@@ -68,36 +85,4 @@ void loop() {
   
 }
 
-void serialPrintData(st_cmd_t *msg){
-  char textBuffer[50] = {0};
-  if (msg->ctrl.ide>0){
-    sprintf(textBuffer,"id %d ",msg->id.ext);
-  }
-  else
-  {
-    sprintf(textBuffer,"id %04x ",msg->id.std);
-  }
-  Serial.print(textBuffer);
-  
-  //  IDE
-  sprintf(textBuffer,"ide %d ",msg->ctrl.ide);
-  Serial.print(textBuffer);
-  
-  //  RTR
-  sprintf(textBuffer,"rtr %d ",msg->ctrl.rtr);
-  Serial.print(textBuffer);
-  
-  //  DLC
-  sprintf(textBuffer,"dlc %d ",msg->dlc);
-  Serial.print(textBuffer);
-  
-  //  Data
-  sprintf(textBuffer,"data ");
-  Serial.print(textBuffer);
-  
-  for (int i =0; i<msg->dlc; i++){
-    sprintf(textBuffer,"%02X ",msg->pt_data[i]);
-    Serial.print(textBuffer);
-  }
-  Serial.print("\r\n");
 }
