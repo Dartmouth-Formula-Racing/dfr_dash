@@ -26,7 +26,10 @@
 #include <Wire.h>
 
 #include <SerLCD.h> //Click here to get the library: http://librarymanager/All#SparkFun_SerLCD
-SerLCD lcd; // Initialize the library with default I2C address 0x72
+SerLCD lcd; // Initialize the library with default I2C address 0x72]
+
+#include <LCD.h>
+#include <LiquidCrystal_I2C.h>
 
 void setup() {
   Wire.begin();
