@@ -1,4 +1,4 @@
-#include <ASTCanLib.h>
+//#include <ASTCanLib.h>
 #include <config.h>
 #include <can_drv.h>
 #include <can_compiler.h>
@@ -37,7 +37,7 @@ const int buttonPinDrive = 6; //17;     // testing for the button debouncing and
 const int buttonPinNeutral = 16;     
 const int buttonPinReverse = 15;     
 
-
+const int buttonLED = 9;
 
 // button var
 int buttonStateDrive = 0; // will be LOW if pressed
@@ -46,42 +46,45 @@ int buttonStateReverse = 0; // will be LOW if pressed
 
 void setup() {
   //Input or output for buttons
-  pinMode(buttonPinDrive, INPUT_PULLUP);  
+  pinMode(buttonPinDrive, INPUT);  // 6
   pinMode(buttonPinNeutral, INPUT_PULLUP);
   pinMode(buttonPinReverse, INPUT_PULLUP); 
+  pinMode(buttonLED, OUTPUT);
+
+  Serial.begin(9600); //Start serial communication at 9600 for debug statements
 
   // transmit data setup
-  canInit(500000);                  // Initialise CAN port. must be before Serial.begin
-  txMsg.pt_data = &txBuffer[0];     // reference message data to transmit buffer
+ // canInit(500000);                  // Initialise CAN port. must be before Serial.begin
+ // txMsg.pt_data = &txBuffer[0];     // reference message data to transmit buffer
 
   // receiver set up
-  Msg.pt_data = &Buffer[0];    // reference message data to buffer
+  //Msg.pt_data = &Buffer[0];    // reference message data to buffer
   
   // Initialise CAN packet.
   // All of these will be overwritten by a received packet
-  Msg.ctrl.ide = MESSAGE_PROTOCOL;  // Set CAN protocol (0: CAN 2.0A, 1: CAN 2.0B)
-  Msg.id.ext   = MESSAGE_ID;        // Set message ID
-  Msg.dlc      = MESSAGE_LENGTH;    // Data length: 8 bytes
-  Msg.ctrl.rtr = MESSAGE_RTR;       // Set rtr bit
+//  Msg.ctrl.ide = MESSAGE_PROTOCOL;  // Set CAN protocol (0: CAN 2.0A, 1: CAN 2.0B)
+//  Msg.id.ext   = MESSAGE_ID;        // Set message ID
+//  Msg.dlc      = MESSAGE_LENGTH;    // Data length: 8 bytes
+//  Msg.ctrl.rtr = MESSAGE_RTR;       // Set rtr bit
 }
 
 void loop(){
   // receive information
   // Clear the message buffer
-  clearBuffer(&Buffer[0]);
-  
-  // Send command to the CAN port controller
-  Msg.cmd = CMD_RX_DATA;
-  
-  // Wait for the command to be accepted by the controller
-  while(can_cmd(&Msg) != CAN_CMD_ACCEPTED);
-  // Wait for command to finish executing
-  while(can_get_status(&Msg) == CAN_STATUS_NOT_COMPLETED);
-
-  // puts information into the text buffer
-  for (int i =0; i<Msg->dlc; i++){
-    sprintf(textBuffer,"%02X ",Msg->pt_data[i]);
-  }
+//  clearBuffer(&Buffer[0]);
+//  
+//  // Send command to the CAN port controller
+//  Msg.cmd = CMD_RX_DATA;
+//  
+//  // Wait for the command to be accepted by the controller
+//  while(can_cmd(&Msg) != CAN_CMD_ACCEPTED);
+//  // Wait for command to finish executing
+//  while(can_get_status(&Msg) == CAN_STATUS_NOT_COMPLETED);
+//
+//  // puts information into the text buffer
+//  for (int i =0; i<Msg->dlc; i++){
+//    sprintf(textBuffer,"%02X ",Msg->pt_data[i]);
+//  }
   
   //Read button state (pressed or not pressed?)
   buttonStateDrive = digitalRead(buttonPinDrive);
@@ -90,8 +93,10 @@ void loop(){
 
   //DRIVE
 
+  
+
   //If button the button is pressed, the state is LOW
-  if (buttonStateDrive == LOW) { 
+  if (buttonStateDrive == HIGH) { 
     // put in an and condition that of the first bit of CVC is = 0 
     // reset the other buttons to high
     //buttonStateNeutral == HIGH;
@@ -102,12 +107,24 @@ void loop(){
 
     // set the state to drive
     txBuffer[0] = 0;
+
+    Serial.println("drive pressed");
+    digitalWrite(buttonLED, HIGH);
+
+    // reset button state
+    //buttonStateDrive == HIGH;
+    
+    }
+    else {
+      digitalWrite(buttonLED, LOW);
     }
 
   //NEUTRAL
 
+  if(0){}
+
   //If button the button is pressed, the state is LOW
-  else if (buttonStateNeutral == LOW) { 
+   if (buttonStateNeutral == LOW) { 
     // reset the other buttons to high
     //buttonStateDrive == HIGH;
     //buttonStateReverse == HIGH;
@@ -117,6 +134,9 @@ void loop(){
 
     // set the state to neutral
     txBuffer[0] = 1;
+
+    // reset button state
+    //buttonStateNeutral == HIGH;
     
     } 
 
@@ -133,21 +153,24 @@ void loop(){
 
     // set the state to reverse
     txBuffer[0] = 2;
+
+    // reset button state
+    //buttonStateReverse == HIGH;
     
     } 
 
-  // transmit
-  // Setup CAN packet.
-  txMsg.ctrl.ide = MESSAGE_PROTOCOL;  // Set CAN protocol (0: CAN 2.0A, 1: CAN 2.0B)
-  txMsg.id.ext   = MESSAGE_ID;        // Set message ID
-  txMsg.dlc      = MESSAGE_LENGTH;    // Data length: 8 bytes
-  txMsg.ctrl.rtr = MESSAGE_RTR;       // Set rtr bit
-  
-  // Send command to the CAN port controller
-  txMsg.cmd = CMD_TX_DATA;       // send message
-  // Wait for the command to be accepted by the controller
-  while(can_cmd(&txMsg) != CAN_CMD_ACCEPTED);
-  // Wait for command to finish executing
-  while(can_get_status(&txMsg) == CAN_STATUS_NOT_COMPLETED);
+//  // transmit
+//  // Setup CAN packet.
+//  txMsg.ctrl.ide = MESSAGE_PROTOCOL;  // Set CAN protocol (0: CAN 2.0A, 1: CAN 2.0B)
+//  txMsg.id.ext   = MESSAGE_ID;        // Set message ID
+//  txMsg.dlc      = MESSAGE_LENGTH;    // Data length: 8 bytes
+//  txMsg.ctrl.rtr = MESSAGE_RTR;       // Set rtr bit
+//  
+//  // Send command to the CAN port controller
+//  txMsg.cmd = CMD_TX_DATA;       // send message
+//  // Wait for the command to be accepted by the controller
+//  while(can_cmd(&txMsg) != CAN_CMD_ACCEPTED);
+//  // Wait for command to finish executing
+//  while(can_get_status(&txMsg) == CAN_STATUS_NOT_COMPLETED);
     
   }
