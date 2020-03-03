@@ -38,7 +38,11 @@ const int buttonPinDrive = 17;
 const int buttonPinNeutral = 16;     
 const int buttonPinReverse = 15;     
 
-//Variables for buttons
+// Variables for things received
+int buttonStateFromCVC = 0; // default to drive
+int r2d_preC_state;
+
+// button var
 int buttonStateDrive = 0; // will be LOW if pressed
 int buttonStateNeutral = 0; // will be LOW if pressed
 int buttonStateReverse = 0; // will be LOW if pressed
